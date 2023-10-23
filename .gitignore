@@ -1,0 +1,7 @@
+chip8
+
+*.o
+
+/.cache
+compile_commands.json
+
