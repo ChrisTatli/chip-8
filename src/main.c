@@ -45,11 +45,22 @@ void clear_renderer(sdl_t *sdl, color_t color){
     SDL_RenderPresent(sdl->renderer);
 }
 
+void init_emu_context(emu_context_t *emu){
+    *emu =(emu_context_t){
+        .width = 64,
+        .height = 32,
+        .bg_color = 0xFF000000,
+        .fg_color = 0x00000000,
+        .clock_speed = 700, //standard speed fits most chip8 roms
+        .pixel_scale = 20
+    };
+}
+
 int main(void)
 {
     sdl_t sdl = {};
-    emu_context_t emu_ctx = { .bg_color = 0xFF000000};
-
+    emu_context_t emu_ctx = {};
+    init_emu_context(&emu_ctx);
     init_sdl(&sdl, &emu_ctx);
     clear_renderer(&sdl, emu_ctx.bg_color);
     //Event handler
