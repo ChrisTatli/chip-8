@@ -2,7 +2,7 @@
 CC=clang
 
 #Compiler options
-CFLAGS=-c -std=c99 -Wall -Wextra -02
+CFLAGS=-c -std=c99 -Wall -Wextra -02 -I/usr/local/include/SDL
 
 #Compiler and linker options for SDL2
 SDL_CFLAGS= $(shell sdl2-config --cflags)
