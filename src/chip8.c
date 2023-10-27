@@ -96,9 +96,12 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
         case 0xD:{
             uint8_t x = chip8->V[instr->x] % 64;
             uint8_t y = chip8->V[instr->y] % 32;
+            const uint8_t startX = x;
             chip8->V[0xF] = 0;
+
             for (uint8_t i = 0; i < instr->n; i++) {
                 uint8_t sprite_data = chip8->ram[chip8->I + i];
+                x = startX;
                 for(uint8_t j = 7; j >= 0; j--){
                     uint8_t check_bit = (sprite_data & (1 << j)); 
                     bool is_set = sprite_data & check_bit;
@@ -107,7 +110,7 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                         chip8->V[0xF] = 1;    
                     }
                     *pixel ^= check_bit;
-                    if(++x >= 64) break;
+                    if(x++ >= 64) break;
                 }
                 if(++y >= 32) break;
             }
