@@ -105,7 +105,7 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 for(uint8_t col = 0; col < 8 ; ++col){
                     if((col + x) >= CHIP8_SCREEN_WIDTH) break;
                     if(!(sprite_data >> (7 - col) & 0x1)) continue;
-                    uint8_t px_pos = (x + col) + (y + row)*CHIP8_SCREEN_WIDTH;
+                    uint16_t px_pos = (x + col) + (y + row)*CHIP8_SCREEN_WIDTH;
                     if(chip8->display_buffer[px_pos]){
                         chip8->V[0xF] = 1;    
                     }
