@@ -32,7 +32,6 @@ bool init_chip8(emu_context_t *emu, chip8_context_t *chip8){
     memset(chip8, 0, sizeof(chip8_context_t));
     
     memmove(&chip8->ram[0], font, sizeof(font));
-
     if(fread(&chip8->ram[entry_point], 1, emu->rom_size, emu->rom) != emu->rom_size){
         SDL_Log("Failed initialising rom in chip8 memory.\n");
         return false;
@@ -94,25 +93,24 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
         } break;
 
         case 0xD:{
-            uint8_t x = chip8->V[instr->x] % 64;
-            uint8_t y = chip8->V[instr->y] % 32;
-            const uint8_t startX = x;
+            uint8_t x = chip8->V[instr->x] & CHIP8_SCREEN_WIDTH - 1; 
+            uint8_t y = chip8->V[instr->y] & CHIP8_SCREEN_HEIGHT - 1;
+            uint8_t n = instr->n;
             chip8->V[0xF] = 0;
 
-            for (uint8_t i = 0; i < instr->n; i++) {
-                uint8_t sprite_data = chip8->ram[chip8->I + i];
-                x = startX;
-                for(uint8_t j = 7; j >= 0; j--){
-                    uint8_t check_bit = (sprite_data & (1 << j)); 
-                    bool is_set = sprite_data & check_bit;
-                    uint8_t *pixel = &chip8->display_buffer[y*64 + x];
-                    if(check_bit && *pixel){
+
+            for (uint8_t row = 0; row < n; ++row) {
+                if((row + y) >= CHIP8_SCREEN_HEIGHT) break;
+                uint8_t sprite_data = chip8->ram[chip8->I + row];
+                for(uint8_t col = 0; col < 8 ; ++col){
+                    if((col + x) >= CHIP8_SCREEN_WIDTH) break;
+                    if(!(sprite_data >> (7 - col) & 0x1)) continue;
+                    uint8_t px_pos = (x + col) + (y + row)*CHIP8_SCREEN_WIDTH;
+                    if(chip8->display_buffer[px_pos]){
                         chip8->V[0xF] = 1;    
                     }
-                    *pixel ^= check_bit;
-                    if(x++ >= 64) break;
+                    chip8->display_buffer[px_pos] ^= 1;
                 }
-                if(++y >= 32) break;
             }
             //SDL_Log("DXYN: Drew sprite of height %u at %u, %u\n", instr->n, chip8->V[instr->x], chip8->V[instr->y]);
         } break;

@@ -1,13 +1,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "chip8.h"
 #include "emulator.h"
 #include "SDL2/SDL_log.h"
 
 void init_emu_context(emu_context_t *emu){
     *emu =(emu_context_t){
-        .width = 64,
-        .height = 32,
+        .width = CHIP8_SCREEN_WIDTH,
+        .height = CHIP8_SCREEN_HEIGHT,
         .bg_color = 0x00000000,
         .fg_color = 0x00FF0000,
         .clock_speed = 700, //standard speed fits most chip8 roms

@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include "emulator.h"
 
+#define CHIP8_SCREEN_WIDTH 64
+#define CHIP8_SCREEN_HEIGHT 32
+
 typedef struct {
     //Memory
     uint8_t ram[4096];
@@ -21,7 +24,7 @@ typedef struct {
     uint16_t stack[16];
 
     //Display
-    uint8_t display_buffer[64 * 32];
+    uint8_t display_buffer[CHIP8_SCREEN_WIDTH * CHIP8_SCREEN_HEIGHT];
     
 } chip8_context_t;
 
