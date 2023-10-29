@@ -5,7 +5,7 @@
 #include "emulator.h"
 #include "SDL2/SDL_log.h"
 
-void init_emu_context(emu_context_t *emu){
+void init_emu_context(emu_context_t *emu, char* filepath){
     *emu =(emu_context_t){
         .width = CHIP8_SCREEN_WIDTH,
         .height = CHIP8_SCREEN_HEIGHT,
@@ -15,7 +15,7 @@ void init_emu_context(emu_context_t *emu){
         .pixel_scale = 20
     };
 
-    if(!load_rom("/Users/christophertatli/dev/chip-8/roms/IBMLogo.ch8", emu)){
+    if(!load_rom(filepath, emu)){
         SDL_Log("Failed loading rom\n");
     }
 }

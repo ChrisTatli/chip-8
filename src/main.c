@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <sys/wait.h>
 #include "chip8.h"
 #include "emulator.h"
 
@@ -71,12 +72,16 @@ void update_renderer(sdl_t *sdl, emu_context_t *emu, chip8_context_t *chip8){
     SDL_RenderPresent(sdl->renderer);
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
+    if(argc < 2){
+        fprintf(stderr, "Usage: %s <path_to_rom>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
     sdl_t sdl = {0};
     emu_context_t emu_ctx = {0};
 
-    init_emu_context(&emu_ctx);
+    init_emu_context(&emu_ctx, argv[1]);
     init_sdl(&sdl, &emu_ctx);
     clear_renderer(&sdl, emu_ctx.bg_color);
 

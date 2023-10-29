@@ -19,5 +19,5 @@ typedef struct{
 } emu_context_t;
 
 bool load_rom(char *, emu_context_t *);
-void init_emu_context(emu_context_t *);
+void init_emu_context(emu_context_t *, char*);
 #endif // !EMULATOR_H
