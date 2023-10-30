@@ -71,14 +71,14 @@ void debug_print_instr(instr_t *instr, chip8_context_t *chip8){
 void execute_instr(chip8_context_t *chip8, instr_t *instr){
     //debug_print_instr(instr);
     bool carry = false;
+    uint8_t flag = 0;
     switch (instr->first) {
         case 0x0:{
             if(instr->nnn == 0x0E0){
                 memset(&chip8->display_buffer[0], 0, sizeof(chip8->display_buffer));
             }
             else if (instr->nnn == 0x0EE) {
-                chip8->SP--;
-                chip8->PC = chip8->stack[chip8->SP];//HMMM
+                chip8->PC = chip8->stack[--chip8->SP];//HMMM
             }
         } break;
 
@@ -137,20 +137,24 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                     chip8->V[0xF] = res > 255;
                 } break;
                 case 0x5:{
-                    chip8->V[0xF] = chip8->V[instr->x] > chip8->V[instr->y];
+                    flag =  chip8->V[instr->x] >= chip8->V[instr->y]; 
                     chip8->V[instr->x] -= chip8->V[instr->y];                                
+                    chip8->V[0xF] = flag;
                 } break;
                 case 0x6:{
-                    chip8->V[0xF] = chip8->V[instr->x] & 1; 
+                    flag = chip8->V[instr->x] & 1; 
                     chip8->V[instr->x] >>= 1;
+                    chip8->V[0xF] = flag; 
                 } break;
                 case 0x7:{
-                    chip8->V[0xF] = chip8->V[instr->y] > chip8->V[instr->x];
+                    flag = chip8->V[instr->y] >= chip8->V[instr->x];
                     chip8->V[instr->x] = chip8->V[instr->y] - chip8->V[instr->x];
+                    chip8->V[0xF] = flag;
                 } break;
                 case 0xE:{
-                    chip8->V[0xF] = chip8->V[instr->x] & (1 << 7);
+                    flag = (chip8->V[instr->x] >> 7) & 1;
                     chip8->V[instr->x] <<= 1;
+                    chip8->V[0xF] = flag;
                 } break;
             }
         } break;
