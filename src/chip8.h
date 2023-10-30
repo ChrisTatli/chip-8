@@ -18,8 +18,8 @@ typedef struct {
     uint16_t I; //Stores mem addrees 16 bit
     uint16_t PC; //Program Counter
     uint8_t SP; //Stack Pointer
-    uint8_t delay_reg; // Delay timer
-    uint8_t sound_reg; // Sound timer
+    uint8_t DT; // Delay timer
+    uint8_t ST; // Sound timer
 
     uint16_t stack[16];
 

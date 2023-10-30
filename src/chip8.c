@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -76,7 +77,8 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 memset(&chip8->display_buffer[0], 0, sizeof(chip8->display_buffer));
             }
             else if (instr->nnn == 0x0EE) {
-                chip8->PC = chip8->stack[chip8->SP--];//HMMM
+                chip8->SP--;
+                chip8->PC = chip8->stack[chip8->SP];//HMMM
             }
         } break;
 
@@ -85,28 +87,27 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
         } break;
 
         case 0x2:{
-            chip8->SP++;
-            chip8->stack[chip8->SP] = chip8->PC;
+            chip8->stack[chip8->SP++] = chip8->PC;
             chip8->PC = instr->nnn;
-        }
+        } break;
 
         case 0x3:{
             if(chip8->V[instr->x] == instr->nn){
                 chip8->PC += 2;
             }
-        }
+        } break;
         
         case 0x4:{
             if(chip8->V[instr->x] != instr->nn){
                 chip8->PC += 2;
             }
-        }
+        } break;
 
         case 0x5:{
             if(chip8->V[instr->x] == chip8->V[instr->y]){
                 chip8->PC += 2;
             }
-        }
+        } break;
 
         case 0x6:{
             chip8->V[instr->x] = instr->nn;
@@ -138,25 +139,41 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 case 0x5:{
                     chip8->V[0xF] = chip8->V[instr->x] > chip8->V[instr->y];
                     chip8->V[instr->x] -= chip8->V[instr->y];                                
-                }
+                } break;
                 case 0x6:{
                     chip8->V[0xF] = chip8->V[instr->x] & 1; 
                     chip8->V[instr->x] >>= 1;
-                }
+                } break;
                 case 0x7:{
                     chip8->V[0xF] = chip8->V[instr->y] > chip8->V[instr->x];
                     chip8->V[instr->x] = chip8->V[instr->y] - chip8->V[instr->x];
-                }
+                } break;
                 case 0xE:{
                     chip8->V[0xF] = chip8->V[instr->x] & (1 << 7);
                     chip8->V[instr->x] <<= 1;
-                }
+                } break;
             }
-        }
+        } break;
+
+        case 0x9:{
+            if(chip8->V[instr->x] != chip8->V[instr->y]){
+                chip8->PC += 2;
+            }
+
+        } break;
+
         case 0xA:{
             chip8->I = instr->nnn; 
         } break;
 
+        case 0xB:{
+            chip8->PC = instr->nnn + chip8->V[0];
+        } break;
+
+        case 0xC:{
+            chip8->V[instr->x] = rand() & instr->nn;
+        } break;
+        
         case 0xD:{
             uint8_t x = chip8->V[instr->x] & CHIP8_SCREEN_WIDTH - 1; 
             uint8_t y = chip8->V[instr->y] & CHIP8_SCREEN_HEIGHT - 1;
@@ -178,6 +195,53 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 }
             }
             //SDL_Log("DXYN: Drew sprite of height %u at %u, %u\n", instr->n, chip8->V[instr->x], chip8->V[instr->y]);
+        } break;
+
+        case 0xE:{
+
+        } break;
+
+        case 0xF:{
+            switch (instr->nn) {
+                case 0x07:{
+                    chip8->V[instr->x] = chip8->DT;
+                } break;
+
+                case 0x0A:{
+
+                } break;
+
+                case 0x15: {
+                    chip8->DT = chip8->V[instr->x];
+                } break;
+                case 0x18:{
+                    chip8->ST = chip8->V[instr->x];
+                } break;
+                case 0x1E:{
+                    chip8->I += chip8->V[instr->x];
+                } break;
+                case 0x29:{
+                    chip8->I = 5 * chip8->V[instr->x];
+                } break;
+                case 0x33:{
+                    uint8_t BCD = chip8->V[instr->x];
+                    chip8->ram[chip8->I] = BCD / 100;
+                    chip8->ram[chip8->I + 1] = (BCD / 10) % 10;
+                    chip8->ram[chip8->I + 2] = BCD % 10;
+                } break;
+                case 0x55:{
+                    for (uint8_t i = 0; i <= instr->x; i++) {
+                        chip8->ram[chip8->I] = chip8->V[i];
+                        chip8->I++;
+                    }
+                } break;
+                case 0x65:{
+                    for (uint8_t i = 0; i <= instr->x; i++) {
+                        chip8->V[i] = chip8->ram[chip8->I];
+                        chip8->I++;
+                    }
+                } break;
+            }
         } break;
     }    
 }
