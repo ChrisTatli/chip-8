@@ -71,14 +71,41 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
     //debug_print_instr(instr);
     switch (instr->first) {
         case 0x0:{
-            if(instr->n == 0x0){
+            if(instr->nnn == 0x0E0){
                 memset(&chip8->display_buffer[0], 0, sizeof(chip8->display_buffer));
+            }
+            else if (instr->nnn == 0x0EE) {
+                chip8->PC = chip8->stack[chip8->SP--];//HMMM
             }
         } break;
 
         case 0x1:{
             chip8->PC = instr->nnn;
         } break;
+
+        case 0x2:{
+            chip8->SP++;
+            chip8->stack[chip8->SP] = chip8->PC;
+            chip8->PC = instr->nnn;
+        }
+
+        case 0x3:{
+            if(chip8->V[instr->x] == instr->nn){
+                chip8->PC += 2;
+            }
+        }
+        
+        case 0x4:{
+            if(chip8->V[instr->x] != instr->nn){
+                chip8->PC += 2;
+            }
+        }
+
+        case 0x5:{
+            if(chip8->V[instr->x] == chip8->V[instr->y]){
+                chip8->PC += 2;
+            }
+        }
 
         case 0x6:{
             chip8->V[instr->x] = instr->nn;
