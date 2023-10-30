@@ -69,6 +69,7 @@ void debug_print_instr(instr_t *instr, chip8_context_t *chip8){
 
 void execute_instr(chip8_context_t *chip8, instr_t *instr){
     //debug_print_instr(instr);
+    bool carry = false;
     switch (instr->first) {
         case 0x0:{
             if(instr->nnn == 0x0E0){
@@ -114,7 +115,44 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
         case 0x7:{
             chip8->V[instr->x] += instr->nn;
         } break;
-
+        
+        case 0x8:{
+            switch (instr->n) {
+                case 0x0:{
+                    chip8->V[instr->x] = chip8->V[instr->y];
+                } break;
+                case 0x1:{
+                    chip8->V[instr->x] |= chip8->V[instr->y];
+                } break;
+                case 0x2:{
+                    chip8->V[instr->x] &= chip8->V[instr->y];
+                } break;
+                case 0x3:{
+                    chip8->V[instr->x] ^= chip8->V[instr->y];
+                } break;
+                case 0x4:{
+                    uint16_t res = chip8->V[instr->x] + chip8->V[instr->y];
+                    chip8->V[instr->x] = res & 0xFF;
+                    chip8->V[0xF] = res > 255;
+                } break;
+                case 0x5:{
+                    chip8->V[0xF] = chip8->V[instr->x] > chip8->V[instr->y];
+                    chip8->V[instr->x] -= chip8->V[instr->y];                                
+                }
+                case 0x6:{
+                    chip8->V[0xF] = chip8->V[instr->x] & 1; 
+                    chip8->V[instr->x] >>= 1;
+                }
+                case 0x7:{
+                    chip8->V[0xF] = chip8->V[instr->y] > chip8->V[instr->x];
+                    chip8->V[instr->x] = chip8->V[instr->y] - chip8->V[instr->x];
+                }
+                case 0xE:{
+                    chip8->V[0xF] = chip8->V[instr->x] & (1 << 7);
+                    chip8->V[instr->x] <<= 1;
+                }
+            }
+        }
         case 0xA:{
             chip8->I = instr->nnn; 
         } break;

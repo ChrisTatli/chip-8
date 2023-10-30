@@ -102,7 +102,7 @@ int main(int argc, char** argv)
             if(e.type == SDL_KEYDOWN){
                 switch (e.key.keysym.sym) {
                     case SDLK_SPACE:
-                        step = true;
+        //                step = true;
                         break;
 
                 }
@@ -114,10 +114,10 @@ int main(int argc, char** argv)
             execute_instr(&chip8_ctx, &instr);
         }
         step = false;
-        /**for(int i = 0; i < emu_ctx.clock_speed/60;i++){
+        for(int i = 0; i < emu_ctx.clock_speed/60;i++){
             instr_t instr = fetch_instr(&chip8_ctx);
             execute_instr(&chip8_ctx, &instr);
-        }**/
+        }
         SDL_Delay(17);
         update_renderer(&sdl, &emu_ctx, &chip8_ctx);
 
