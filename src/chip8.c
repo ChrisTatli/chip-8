@@ -202,7 +202,16 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
         } break;
 
         case 0xE:{
-
+            if (instr->nn == 0x9E) {
+               if(chip8->keypad[chip8->V[instr->x]]){
+                    chip8->PC += 2;
+               }  
+            }
+            if (instr->nn == 0xA1){
+                if(!chip8->keypad[chip8->V[instr->x]]){
+                    chip8->PC += 2;
+                }
+            }
         } break;
 
         case 0xF:{
@@ -212,6 +221,21 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 } break;
 
                 case 0x0A:{
+                    bool key_pressed = false;
+                    uint8_t key = 0;
+                    for(int8_t i = 0; i < 16; i ++){
+                        if(chip8->keypad[i]){
+                            key = i;
+                            key_pressed = true;
+                            break;
+                        }
+                    }
+                    if(!key_pressed){
+                        chip8->PC -= 2;
+                    } else {
+                        chip8->V[instr->x] = key;
+                    }
+
 
                 } break;
 

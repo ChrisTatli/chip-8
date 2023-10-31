@@ -12,7 +12,8 @@ void init_emu_context(emu_context_t *emu, char* filepath){
         .bg_color = 0x00000000,
         .fg_color = 0x00FF0000,
         .clock_speed = 700, //standard speed fits most chip8 roms
-        .pixel_scale = 20
+        .pixel_scale = 20,
+        .state = RUNNING
     };
 
     if(!load_rom(filepath, emu)){

@@ -26,6 +26,7 @@ typedef struct {
     //Display
     uint8_t display_buffer[CHIP8_SCREEN_WIDTH * CHIP8_SCREEN_HEIGHT];
     
+    bool keypad[16];
 } chip8_context_t;
 
 typedef struct{
