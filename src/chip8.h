@@ -44,5 +44,5 @@ void debug_print_instr(instr_t*, chip8_context_t *);
 instr_t fetch_instr(chip8_context_t *);
 void execute_instr(chip8_context_t *, instr_t *);
 bool init_chip8(emu_context_t *, chip8_context_t *);
-
+void decrement_timers(chip8_context_t *);
 #endif // !CHIP8_H

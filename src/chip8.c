@@ -68,6 +68,15 @@ void debug_print_instr(instr_t *instr, chip8_context_t *chip8){
     SDL_Log("\n\n");
 }
 
+void decrement_timers(chip8_context_t *chip8){
+    if(chip8->DT > 0){
+        chip8->DT--;
+    }
+    if(chip8->ST > 0){
+        chip8->ST--;
+    }
+}
+
 void execute_instr(chip8_context_t *chip8, instr_t *instr){
     //debug_print_instr(instr);
     bool carry = false;
@@ -221,8 +230,8 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 } break;
 
                 case 0x0A:{
-                    bool key_pressed = false;
-                    uint8_t key = 0;
+                    static bool key_pressed = false;
+                    static uint8_t key = 0;
                     for(int8_t i = 0; i < 16; i ++){
                         if(chip8->keypad[i]){
                             key = i;
@@ -233,7 +242,12 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                     if(!key_pressed){
                         chip8->PC -= 2;
                     } else {
-                        chip8->V[instr->x] = key;
+                        if(chip8->keypad[key]){
+                            chip8->PC -= 2;
+                        } else {
+                            chip8->V[instr->x] = key;
+                            key_pressed = false;
+                        }
                     }
 
 

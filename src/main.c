@@ -161,9 +161,9 @@ int main(int argc, char** argv)
             instr_t instr = fetch_instr(&chip8_ctx);
             execute_instr(&chip8_ctx, &instr);
         }
-        SDL_Delay(17);
+        SDL_Delay(17); //TODO make this more accurate
         update_renderer(&sdl, &emu_ctx, &chip8_ctx);
-
+        decrement_timers(&chip8_ctx); 
     }
 
     destroy_sdl(&sdl);
