@@ -133,12 +133,15 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                 } break;
                 case 0x1:{
                     chip8->V[instr->x] |= chip8->V[instr->y];
+                    chip8->V[0xF] = 0;
                 } break;
                 case 0x2:{
                     chip8->V[instr->x] &= chip8->V[instr->y];
+                    chip8->V[0xF] = 0;
                 } break;
                 case 0x3:{
                     chip8->V[instr->x] ^= chip8->V[instr->y];
+                    chip8->V[0xF] = 0;
                 } break;
                 case 0x4:{
                     uint16_t res = chip8->V[instr->x] + chip8->V[instr->y];
@@ -151,6 +154,7 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                     chip8->V[0xF] = flag;
                 } break;
                 case 0x6:{
+                    chip8->V[instr->x] = chip8->V[instr->y];
                     flag = chip8->V[instr->x] & 1; 
                     chip8->V[instr->x] >>= 1;
                     chip8->V[0xF] = flag; 
@@ -161,6 +165,7 @@ void execute_instr(chip8_context_t *chip8, instr_t *instr){
                     chip8->V[0xF] = flag;
                 } break;
                 case 0xE:{
+                    chip8->V[instr->x] = chip8->V[instr->y];
                     flag = (chip8->V[instr->x] >> 7) & 1;
                     chip8->V[instr->x] <<= 1;
                     chip8->V[0xF] = flag;
