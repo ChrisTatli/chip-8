@@ -1,3 +1,4 @@
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_log.h>
 #include <SDL2/SDL_scancode.h>
@@ -13,8 +14,11 @@
 typedef struct {    
     SDL_Window *window;
     SDL_Renderer *renderer;
-
+    SDL_AudioSpec obtained, desired;
 } sdl_t;
+
+
+void audio_callback(void*, uint8_t*, int);
 
 bool init_sdl(sdl_t *sdl, emu_context_t *emu){
     SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_AUDIO);
@@ -23,7 +27,32 @@ bool init_sdl(sdl_t *sdl, emu_context_t *emu){
                                    , emu->height * emu->pixel_scale
                                    , 0);
     sdl->renderer = SDL_CreateRenderer(sdl->window, -1, 0);
+    
+    sdl->desired = (SDL_AudioSpec){
+        .freq = 44100,
+        .format = AUDIO_S16LSB,
+        .channels = 1,
+        .samples = 512,
+        .callback = audio_callback,
+        .userdata = &emu->audio,
+    };
+    if(SDL_OpenAudio(&sdl->desired, &sdl->obtained) < 0){
+        SDL_Log("Error: Could not open audio\n");
+    }
     return true;
+}
+
+void audio_callback(void *userdata, uint8_t *stream, int len) {
+    //https://davidgow.net/handmadepenguin/ch8.html
+    struct audio_info *info = (struct audio_info*)userdata;
+    int16_t *audio_data = (int16_t *)stream;
+    const int32_t square_wave_period = info->samples_per_sec/ info->tone_hz;
+    const int32_t half_square_wave_period = square_wave_period / 2;
+
+    for (int i = 0; i < len / 2; i++)
+        audio_data[i] = ((info->running_sample_index++ / half_square_wave_period) % 2) ? 
+                        info->tone_volume: 
+                        -info->tone_volume;
 }
 
 void destroy_sdl(sdl_t *sdl){
@@ -134,7 +163,7 @@ int main(int argc, char** argv)
     sdl_t sdl = {0};
     emu_context_t emu_ctx = {0};
 
-    init_emu_context(&emu_ctx, argv[1]);
+    init_emu_context(&emu_ctx, &sdl.obtained, argv[1]);
     init_sdl(&sdl, &emu_ctx);
     clear_renderer(&sdl, emu_ctx.bg_color);
 

@@ -1,3 +1,4 @@
+#include <SDL2/SDL_audio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -5,7 +6,7 @@
 #include "emulator.h"
 #include "SDL2/SDL_log.h"
 
-void init_emu_context(emu_context_t *emu, char* filepath){
+void init_emu_context(emu_context_t *emu, SDL_AudioSpec *audio, char* filepath){
     *emu =(emu_context_t){
         .width = CHIP8_SCREEN_WIDTH,
         .height = CHIP8_SCREEN_HEIGHT,
@@ -13,7 +14,11 @@ void init_emu_context(emu_context_t *emu, char* filepath){
         .fg_color = 0x00FF0000,
         .clock_speed = 700, //standard speed fits most chip8 roms
         .pixel_scale = 20,
-        .state = RUNNING
+        .state = RUNNING,
+        .audio.tone_hz = 440,
+        .audio.tone_volume = 3000,
+        .audio.samples_per_sec = 44100,
+        .audio.running_sample_index = 0,
     };
 
     if(!load_rom(filepath, emu)){

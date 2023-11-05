@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include "emulator.h"
+#include <SDL2/SDL_audio.h>
 #include <SDL2/SDL_log.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -74,6 +75,9 @@ void decrement_timers(chip8_context_t *chip8){
     }
     if(chip8->ST > 0){
         chip8->ST--;
+        SDL_PauseAudio(0);
+    } else {
+        SDL_PauseAudio(1);
     }
 }
 
