@@ -13,8 +13,8 @@ override CFLAGS += $(SDL_CFLAGS)
 HEADERDIR= src/
 SOURCEDIR= src/
 
-HEADERFILES= chip8.h emulator.h
-SOURCEFILES= main.c emulator.c chip8.c
+HEADERFILES= chip8.h emulator.h platform.h
+SOURCEFILES= main.c emulator.c chip8.c platform.c
 
 HEADERS_FP= $(addprefix $(HEADERDIR),$(HEADERFILES))
 SOURCE_FP= $(addprefix $(SOURCEDIR),$(SOURCEFILES))
