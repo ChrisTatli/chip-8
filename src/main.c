@@ -39,6 +39,7 @@ bool init_sdl(sdl_t *sdl, emu_context_t *emu){
     if(SDL_OpenAudio(&sdl->desired, &sdl->obtained) < 0){
         SDL_Log("Error: Could not open audio\n");
     }
+    emu->audio.samples_per_sec = sdl->obtained.freq;
     return true;
 }
 
@@ -163,7 +164,7 @@ int main(int argc, char** argv)
     sdl_t sdl = {0};
     emu_context_t emu_ctx = {0};
 
-    init_emu_context(&emu_ctx, &sdl.obtained, argv[1]);
+    init_emu_context(&emu_ctx, argv[1]);
     init_sdl(&sdl, &emu_ctx);
     clear_renderer(&sdl, emu_ctx.bg_color);
 

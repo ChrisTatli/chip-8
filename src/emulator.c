@@ -6,7 +6,7 @@
 #include "emulator.h"
 #include "SDL2/SDL_log.h"
 
-void init_emu_context(emu_context_t *emu, SDL_AudioSpec *audio, char* filepath){
+void init_emu_context(emu_context_t *emu, char* filepath){
     *emu =(emu_context_t){
         .width = CHIP8_SCREEN_WIDTH,
         .height = CHIP8_SCREEN_HEIGHT,
